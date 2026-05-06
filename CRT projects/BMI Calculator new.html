@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;
+background:linear-gradient(135deg,#667eea,#764ba2);font-family:sans-serif}
+.box{background:#fff2;padding:20px;border-radius:15px;width:280px;color:#fff;text-align:center;backdrop-filter:blur(10px)}
+input,button{width:100%;margin:8px 0;padding:10px;border:none;border-radius:8px}
+button{background:#00c6ff;color:#fff;cursor:pointer}
+.bar{height:15px;background:#fff3;border-radius:10px;margin-top:10px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:10px}
+</style>
+</head>
+
+<body>
+<div class="box">
+<h2>BMI</h2>
+<input id="w" placeholder="Weight kg">
+<input id="h" placeholder="Height cm">
+<button onclick="c()">Calculate</button>
+<div id="r"></div>
+<div class="bar"><div id="f" class="fill"></div></div>
+</div>
+
+<script>
+function c(){
+let w=wgt=w.value,hgt=h.value/100,b=(wgt/(hgt*hgt)).toFixed(1),
+f=document.getElementById("f"),r=document.getElementById("r");
+let p=Math.min(b/40*100,100),c=b<18.5?"#f1c40f":b<25?"#2ecc71":b<30?"#e67e22":"#e74c3c";
+f.style.width=p+"%";f.style.background=c;
+r.innerHTML="BMI: "+b;
+}
+</script>
+</body>
+</html>

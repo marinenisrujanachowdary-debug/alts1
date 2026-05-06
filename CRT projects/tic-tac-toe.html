@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe Pro</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #ff7eb3, #65d6ce);
+    color: white;
+}
+
+h1 {
+    margin-top: 15px;
+}
+
+.mode button, .reset-btn {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.mode button {
+    background: #222;
+    color: white;
+}
+
+.reset-btn {
+    background: #ff4757;
+    color: white;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px;
+}
+
+.score {
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background: white;
+    color: black;
+    font-size: 2.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.cell:hover {
+    background: #f1f1f1;
+}
+
+.X { color: #ff4757; }
+.O { color: #1e90ff; }
+
+.status {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎮 Tic Tac Toe</h1>
+
+<div class="mode">
+    <button onclick="setMode('friend')">👥 Friend</button>
+    <button onclick="setMode('computer')">🤖 Computer</button>
+</div>
+
+<div class="scoreboard">
+    <div class="score">X: <span id="xScore">0</span></div>
+    <div class="score">O: <span id="oScore">0</span></div>
+    <div class="score">Draw: <span id="drawScore">0</span></div>
+</div>
+
+<button class="reset-btn" onclick="resetScores()">Reset Score</button>
+
+<div class="board" id="board"></div>
+
+<div class="status" id="status">Select mode to start</div>
+
+<script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let gameActive = false;
+let mode = "";
+
+let scores = { X: 0, O: 0, draw: 0 };
+
+const boardDiv = document.getElementById("board");
+const statusDiv = document.getElementById("status");
+
+function setMode(selectedMode) {
+    mode = selectedMode;
+    resetGame();
+    gameActive = true;
+    statusDiv.textContent = "Player X Turn";
+}
+
+function createBoard() {
+    boardDiv.innerHTML = "";
+    board.forEach((cell, index) => {
+        const div = document.createElement("div");
+        div.classList.add("cell");
+        if (cell) div.classList.add(cell);
+        div.innerText = cell;
+        div.onclick = () => handleClick(index);
+        boardDiv.appendChild(div);
+    });
+}
+
+function handleClick(index) {
+    if (!gameActive || board[index] !== "") return;
+
+    board[index] = currentPlayer;
+    createBoard();
+
+    if (checkWinner()) {
+        statusDiv.textContent = currentPlayer + " Wins!";
+        scores[currentPlayer]++;
+        updateScores();
+        gameActive = false;
+        return;
+    }
+
+    if (!board.includes("")) {
+        statusDiv.textContent = "Draw!";
+        scores.draw++;
+        updateScores();
+        gameActive = false;
+        return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+
+    if (mode === "computer" && currentPlayer === "O") {
+        setTimeout(computerMove, 500);
+    } else {
+        statusDiv.textContent = "Player " + currentPlayer + " Turn";
+    }
+}
+
+function computerMove() {
+    let empty = board.map((v,i)=> v==""?i:null).filter(v=>v!==null);
+    let move = empty[Math.floor(Math.random()*empty.length)];
+
+    board[move] = "O";
+    createBoard();
+
+    if (checkWinner()) {
+        statusDiv.textContent = "Computer Wins!";
+        scores.O++;
+        updateScores();
+        gameActive = false;
+        return;
+    }
+
+    if (!board.includes("")) {
+        statusDiv.textContent = "Draw!";
+        scores.draw++;
+        updateScores();
+        gameActive = false;
+        return;
+    }
+
+    currentPlayer = "X";
+    statusDiv.textContent = "Player X Turn";
+}
+
+function checkWinner() {
+    const win = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+
+    return win.some(p => p.every(i => board[i] === currentPlayer));
+}
+
+function updateScores() {
+    document.getElementById("xScore").innerText = scores.X;
+    document.getElementById("oScore").innerText = scores.O;
+    document.getElementById("drawScore").innerText = scores.draw;
+}
+
+function resetGame() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    currentPlayer = "X";
+    createBoard();
+}
+
+function resetScores() {
+    scores = { X: 0, O: 0, draw: 0 };
+    updateScores();
+}
+
+createBoard();
+</script>
+
+</body>
+</html>
